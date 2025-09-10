@@ -13,11 +13,15 @@ services:
             - '8080:8080'
 
     order_db:
+        restart: always
         container_name: order_db_container
-        build:
-            dockerfile: ./order_db_dockerfile
+        image: postgres
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: 123qwe
+            POSTGRES_DB: order_db
         ports:
-            - '5432:5432'
+            - '5430:5432'
         networks:
             - isolation_network
     
