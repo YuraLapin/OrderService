@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using OrderService.DataBase;
+using OrderServiceDataBase;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +7,7 @@ builder.Logging.AddConsole();
 
 // Add services to the container.
 builder.Services.AddDbContext<DataBaseContext>(options => options.UseNpgsql("Server=order_db_container;Port=5432;Database=order_db;Username=postgres;Password=123qwe"));
+builder.Services.AddHttpClient();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();

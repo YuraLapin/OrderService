@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace OrderService.DataBase
+namespace OrderServiceDataBase
 {
     public class DataBaseContext: DbContext
     {

@@ -9,9 +9,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
 		docker-compose.yml = docker-compose.yml
-		order_app_dockerfile. = order_app_dockerfile.
-		order_db_dockerfile = order_db_dockerfile
+		..\docker-compose.yml = ..\docker-compose.yml
+		order_app_dockerfile = order_app_dockerfile
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderServiceDataBase", "OrderServiceDataBase\OrderServiceDataBase.csproj", "{D18C04C2-F304-4894-B335-AA9DBF68EEE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{2CF49619-CABB-57D1-879C-5D23BEE1DCD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CF49619-CABB-57D1-879C-5D23BEE1DCD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CF49619-CABB-57D1-879C-5D23BEE1DCD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D18C04C2-F304-4894-B335-AA9DBF68EEE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D18C04C2-F304-4894-B335-AA9DBF68EEE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D18C04C2-F304-4894-B335-AA9DBF68EEE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D18C04C2-F304-4894-B335-AA9DBF68EEE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
