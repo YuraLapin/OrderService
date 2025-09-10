@@ -3,7 +3,7 @@ WORKDIR /source
 
 COPY *.sln .
 COPY OrderServiceMain/*.csproj ./OrderServiceMain/
-RUN dotnet restore
+RUN dotnet restore OrderServiceMain/OrderServiceMain.csproj
 
 COPY OrderServiceMain/. ./OrderServiceMain
 WORKDIR /source/OrderServiceMain
