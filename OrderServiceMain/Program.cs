@@ -5,8 +5,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddConsole();
 
+string connString = builder.Configuration.GetValue<string>("ConnectionsString:PaymentService") ?? "";
+
 // Add services to the container.
-builder.Services.AddDbContext<DataBaseContext>(options => options.UseNpgsql("Server=order_db_container;Port=5432;Database=order_db;Username=postgres;Password=123qwe"));
+builder.Services.AddDbContext<DataBaseContext>(options => options.UseNpgsql(connString));
 builder.Services.AddHttpClient();
 builder.Services.AddControllersWithViews();
 
