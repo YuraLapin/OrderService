@@ -1,15 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using OrderServiceDataBase;
+using OrderServiceMain.Refit;
+using Refit;
+using OrderServiceMain.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddConsole();
 
-string connString = builder.Configuration.GetValue<string>("ConnectionsString:PaymentService") ?? "";
+string connString = builder.Configuration["ConnectionStrings:Postgres"];
+string paymentAddress = builder.Configuration["Addresses:PaymentService"];
 
 // Add services to the container.
+builder.Services.AddScoped<DataBaseService>();
+builder.Services.AddSingleton<InputChecker>();
 builder.Services.AddDbContext<DataBaseContext>(options => options.UseNpgsql(connString));
-builder.Services.AddHttpClient();
+builder.Services.AddRefitClient<IPaymentClient>().ConfigureHttpClient(c => c.BaseAddress = new Uri(paymentAddress));
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -31,6 +37,6 @@ app.UseRouting();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Orders}/{action=Index}/{id?}");
 
 app.Run();
