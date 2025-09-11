@@ -1,23 +1,33 @@
 using Microsoft.AspNetCore.Mvc;
 using OrderServiceDataBase;
+using OrderServiceDataBase.Models;
+using OrderServiceMain.Refit;
+using OrderServiceMain.Utility;
 
 namespace OrderService.Controllers
 {
     public class OrdersController : Controller
     {
         private readonly ILogger<OrdersController> _logger;
-        private readonly DataBaseContext _db;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
-        private readonly string? paymentAddress;
+        private readonly DataBaseService _dbService;
+        private readonly IPaymentClient _paymentClient;
+        private readonly InputChecker _inputChecker;
 
-        public OrdersController(ILogger<OrdersController> logger, DataBaseContext db, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public OrdersController
+        (
+            ILogger<OrdersController> logger,
+            DataBaseService dbService,
+            IConfiguration configuration,
+            IPaymentClient paymentClient,
+            InputChecker inputChecker
+        )
         {
             _logger = logger;
-            _db = db;
-            _httpClientFactory = httpClientFactory;
             _configuration = configuration;
-            paymentAddress = _configuration["Addresses:PaymentService"] ?? "";
+            _dbService = dbService;
+            _paymentClient = paymentClient;
+            _inputChecker = inputChecker;
         }
 
         public IActionResult Index()
@@ -26,31 +36,47 @@ namespace OrderService.Controllers
         }
 
         [HttpPost("orders")]
-        public async Task<IActionResult> AddOrder(int sum, string clientName)
+        public async Task<IActionResult> AddOrder(int sum, string clientName, CancellationToken ct)
         {
-            _logger.LogWarning($"Order sum{sum} name{clientName}");
+            //_logger.LogWarning($"Order sum{sum} name{clientName}");
 
-            _db.Orders.Add(new Order { Sum = sum, ClientName = clientName });
-            await _db.SaveChangesAsync();
+            string? errorMessage = _inputChecker.CheckOrder(sum, clientName);
+            if (errorMessage != null) return BadRequest(errorMessage);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, paymentAddress);
-            var client = _httpClientFactory.CreateClient();
-            var response = await client.SendAsync(request);
+            var newId = await _dbService.AddOrder(sum, clientName, ct);
+
+            if (ct.IsCancellationRequested) return StatusCode(499);
+
+            await _paymentClient.AddPayment(newId, ct);
+
+            if (ct.IsCancellationRequested)
+            {
+                await _dbService.DeleteOrder(newId);
+                return StatusCode(499);
+            }
 
             return Ok();
         }
 
         [HttpGet("orders/{id:int}")]
-        public IActionResult GetOrder(int id)
+        public async Task<IActionResult> GetOrder(int id, CancellationToken ct)
         {
-            Order? res = _db.Orders.Find(id);
-            if (res != null)
+            string? errorMessage = _inputChecker.CheckOrderId(id);
+            if (errorMessage != null) return BadRequest(errorMessage);
+
+            Order? res = _dbService.GetOrder(id);
+            if (res == null)
             {
-                _logger.LogWarning($"Order { id }");
-                return Json(res);
+                //_logger.LogWarning($"No order { id }");
+                return BadRequest("Заказа с заданым id не существует");
             }
-            _logger.LogWarning($"No order { id }");
-            return BadRequest();
+
+            bool isComplete = await _paymentClient.GetPayment(id, ct);
+
+            if (ct.IsCancellationRequested) return StatusCode(499);
+
+            //_logger.LogWarning($"Order { id }");
+            return Json(new CompletableOrder(res, isComplete));
         }
 
         //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
