@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderServiceMain", "OrderServiceMain\OrderServiceMain.csproj", "{2CF49619-CABB-57D1-879C-5D23BEE1DCD2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.WebApi", "OrderServiceMain\OrderService.WebApi.csproj", "{2CF49619-CABB-57D1-879C-5D23BEE1DCD2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderServiceDataBase", "OrderServiceDataBase\OrderServiceDataBase.csproj", "{D18C04C2-F304-4894-B335-AA9DBF68EEE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.DataAccess.Postgres", "OrderServiceDataBase\OrderService.DataAccess.Postgres.csproj", "{D18C04C2-F304-4894-B335-AA9DBF68EEE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
