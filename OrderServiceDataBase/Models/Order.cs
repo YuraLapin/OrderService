@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace OrderServiceDataBase
+namespace OrderServiceDataBase.Models
 {
     public class Order
     {
