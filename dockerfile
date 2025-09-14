@@ -3,4 +3,4 @@ WORKDIR /source
 COPY OrderService/. .
 RUN dotnet build -o /app
 WORKDIR /app
-ENTRYPOINT ["dotnet", "/app/OrderServiceMain.dll"]
+ENTRYPOINT ["dotnet", "/app/OrderService.WebApi.dll"]
