@@ -2,8 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Refit;
 using OrderService.DataAccess.Postgres;
 using OrderService.WebApi.Refit;
-using OrderService.WebApi.Utility;
 using Mediator;
+using FluentValidation;
+using OrderService.WebApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,10 +14,10 @@ string connString = builder.Configuration["ConnectionStrings:Postgres"];
 string paymentAddress = builder.Configuration["Addresses:PaymentService"];
 
 // Add services to the container.
-builder.Services.AddSingleton<InputChecker>();
 builder.Services.AddDbContext<DataBaseContext>(options => options.UseNpgsql(connString));
 builder.Services.AddRefitClient<IPaymentClient>().ConfigureHttpClient(c => c.BaseAddress = new Uri(paymentAddress));
 builder.Services.AddControllersWithViews();
+builder.Services.AddValidatorsFromAssemblyContaining<OrderValidator>();
 builder.Services.AddMediator((MediatorOptions options) =>
 {
     options.ServiceLifetime = ServiceLifetime.Scoped;

@@ -2,17 +2,15 @@
 using OrderService.DataAccess.Postgres;
 using OrderService.DataAccess.Postgres.Models;
 using OrderService.WebApi.UseCases.Commands;
-using Microsoft.AspNetCore.Mvc;
-using OrderService.WebApi.Utility;
+using FluentValidation;
 
 namespace OrderService.WebApi.UseCases.Handlers
 {
-    public class DeleteOrderHandler(DataBaseContext db, InputChecker inputChecker) : IRequestHandler<DeleteOrderCommand, string?>
+    public class DeleteOrderHandler(DataBaseContext db, IValidator<Order> validator) : IRequestHandler<DeleteOrderCommand, string?>
     {
         public async ValueTask<string?> Handle(DeleteOrderCommand command, CancellationToken ct)
         {
-            string? errorMessage = inputChecker.CheckId(command.OrderId);
-            if (errorMessage != null) return errorMessage;
+            if (command.OrderId < 0) return "Id заказа не может быть меньше нуля";
             db.Orders.Remove(new Order() { Id = command.OrderId });
             await db.SaveChangesAsync(ct);
             return null;
