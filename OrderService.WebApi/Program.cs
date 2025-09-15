@@ -37,6 +37,6 @@ app.UseRouting();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Orders}/{action=Index}/{id?}");
+    pattern: "{controller=Orders}/{action}/{id?}");
 
 app.Run();
