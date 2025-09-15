@@ -4,7 +4,6 @@ namespace OrderService.DataAccess.Postgres.Models
 {
     public class Order
     {
-        [Key]
         public long Id { get; set; }
         public long ProductId { get; set; }
         public string EmailClient { get; set; }
