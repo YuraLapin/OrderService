@@ -64,10 +64,10 @@ namespace OrderService.WebApi.Utility
 
         private string? CheckPhoneNumber(string phoneNumber)
         {
-            if (phoneNumber.Count() > _phoneNumberMaxSize) return $"Номер телефона клиента не действителен 1 {phoneNumber}";
+            if (phoneNumber.Count() > _phoneNumberMaxSize) return "Номер телефона клиента не действителен";
 
             string pattern = @"^[\+]?[0-9][\s]??[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,5}$";
-            if (!Regex.IsMatch(phoneNumber, pattern)) return $"Номер телефона клиента не действителен 2 {phoneNumber}";
+            if (!Regex.IsMatch(phoneNumber, pattern)) return "Номер телефона клиента не действителен";
 
             return null;
         }
