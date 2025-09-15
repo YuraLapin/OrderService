@@ -11,7 +11,9 @@ namespace OrderService.WebApi.UseCases.Handlers
         public async ValueTask<string?> Handle(DeleteOrderCommand command, CancellationToken ct)
         {
             if (command.OrderId < 0) return "Id заказа не может быть меньше нуля";
-            db.Orders.Remove(new Order() { Id = command.OrderId });
+            Order? toDelete = await db.Orders.FindAsync(command.OrderId, ct);
+            if (toDelete == null) return "Не найдено заказа с заданным Id";
+            db.Orders.Remove(toDelete);
             await db.SaveChangesAsync(ct);
             return null;
         }
