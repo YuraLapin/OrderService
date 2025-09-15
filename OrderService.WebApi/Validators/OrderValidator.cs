@@ -26,7 +26,7 @@ namespace OrderService.WebApi.Validators
             RuleFor(o => o.EmailClient).Must(MatchEmailPattern).WithMessage("Почта клиента не действительна");
 
             RuleFor(o => o.Price).NotEmpty().WithMessage("Price должен быть заполнен");
-            RuleFor(o => o.Price).GreaterThan(0).WithMessage("Сумма заказа не может быть меньше нуля");
+            RuleFor(o => o.Price).GreaterThan(-1).WithMessage("Сумма заказа не может быть меньше нуля");
 
             RuleFor(o => o.PhoneNumber).NotEmpty().WithMessage("PhoneNumber должен быть заполнен");
             RuleFor(o => o.PhoneNumber).Length(_phoneNumberMinSize, _phoneNumberMaxSize).WithMessage("PhoneNumber слишком длинный");
