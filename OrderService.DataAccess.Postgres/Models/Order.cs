@@ -1,14 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace OrderServiceDataBase.Models
+namespace OrderService.DataAccess.Postgres.Models
 {
     public class Order
     {
         [Key]
-        public int Id { get; set; }
-        public int Sum { get; set; }
-        [Required]
-        public string ClientName { get; set; }
+        public long Id { get; set; }
+        public long ProductId { get; set; }
+        public string EmailClient { get; set; }
+        public decimal Price {  get; set; }
+        public string PhoneNumber { get; set; }
     }
 }
