@@ -13,7 +13,7 @@ namespace OrderService.WebApi.UseCases.Handlers
             string? errorMessage = inputChecker.CheckId(command.OrderId);
             if (errorMessage != null) return errorMessage;
 
-            Order? res = db.Orders.Find(command.OrderId);
+            Order? res = await db.Orders.FindAsync(command.OrderId, ct);
             if (res == null)
             {
                 return "Заказа с заданым id не существует";
