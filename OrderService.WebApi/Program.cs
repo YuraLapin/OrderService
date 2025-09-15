@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using OrderServiceDataBase;
-using OrderServiceMain.Refit;
 using Refit;
-using OrderServiceMain.Utility;
+using OrderService.DataAccess.Postgres;
+using OrderService.WebApi.Refit;
+using OrderService.WebApi.Utility;
+using Mediator;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +13,15 @@ string connString = builder.Configuration["ConnectionStrings:Postgres"];
 string paymentAddress = builder.Configuration["Addresses:PaymentService"];
 
 // Add services to the container.
-builder.Services.AddScoped<DataBaseService>();
 builder.Services.AddSingleton<InputChecker>();
 builder.Services.AddDbContext<DataBaseContext>(options => options.UseNpgsql(connString));
 builder.Services.AddRefitClient<IPaymentClient>().ConfigureHttpClient(c => c.BaseAddress = new Uri(paymentAddress));
 builder.Services.AddControllersWithViews();
+builder.Services.AddMediator((MediatorOptions options) =>
+{
+    options.ServiceLifetime = ServiceLifetime.Scoped;
+}
+);
 
 var app = builder.Build();
 

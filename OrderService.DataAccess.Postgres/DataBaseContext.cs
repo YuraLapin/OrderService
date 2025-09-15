@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OrderServiceDataBase.Models;
+using OrderService.DataAccess.Postgres.Models;
 
-namespace OrderServiceDataBase
+namespace OrderService.DataAccess.Postgres
 {
     public class DataBaseContext: DbContext
     {

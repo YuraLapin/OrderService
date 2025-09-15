@@ -1,88 +1,62 @@
 using Microsoft.AspNetCore.Mvc;
-using OrderServiceDataBase;
-using OrderServiceDataBase.Models;
-using OrderServiceMain.Refit;
-using OrderServiceMain.Utility;
+using Mediator;
+using OrderService.DataAccess.Postgres.Models;
+using OrderService.WebApi.UseCases.Commands;
 
-namespace OrderService.Controllers
+namespace OrderService.WebApi.Controllers
 {
     public class OrdersController : Controller
     {
         private readonly ILogger<OrdersController> _logger;
-        private readonly IConfiguration _configuration;
-        private readonly DataBaseService _dbService;
-        private readonly IPaymentClient _paymentClient;
-        private readonly InputChecker _inputChecker;
+        private readonly IMediator _mediator;
 
         public OrdersController
         (
             ILogger<OrdersController> logger,
-            DataBaseService dbService,
-            IConfiguration configuration,
-            IPaymentClient paymentClient,
-            InputChecker inputChecker
+            IMediator mediator
         )
         {
             _logger = logger;
-            _configuration = configuration;
-            _dbService = dbService;
-            _paymentClient = paymentClient;
-            _inputChecker = inputChecker;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
+            _mediator = mediator;
         }
 
         [HttpPost("orders")]
-        public async Task<IActionResult> AddOrder(int sum, string clientName, CancellationToken ct)
+        public async Task<IActionResult> AddOrder(Order order, CancellationToken ct)
         {
-            //_logger.LogWarning($"Order sum{sum} name{clientName}");
+            var res = await _mediator.Send(new AddOrderCommand(order), ct);
 
-            string? errorMessage = _inputChecker.CheckOrder(sum, clientName);
-            if (errorMessage != null) return BadRequest(errorMessage);
-
-            var newId = await _dbService.AddOrder(sum, clientName, ct);
-
-            if (ct.IsCancellationRequested) return StatusCode(499);
-
-            await _paymentClient.AddPayment(newId, ct);
-
-            if (ct.IsCancellationRequested)
+            if (res is string)
             {
-                await _dbService.DeleteOrder(newId);
-                return StatusCode(499);
+                return BadRequest(res);
+            }
+
+            return Json((long)res);
+        }
+
+        [HttpGet("orders/{orderId:int}")]
+        public async Task<IActionResult> GetOrder(int orderId, CancellationToken ct)
+        {
+            var res = await _mediator.Send(new GetOrderCommand(orderId));
+
+            if (res is string)
+            {
+                return BadRequest(res);
+            }
+
+            return Json((Order)res);
+        }
+
+        [HttpDelete("orders/{orderId:int}")]
+        public async Task<IActionResult> DeleteOrder(int orderId, CancellationToken ct)
+        {
+            var res = await _mediator.Send(new DeleteOrderCommand(orderId), ct);
+
+            if (res is string)
+            {
+                return BadRequest(res);
             }
 
             return Ok();
         }
-
-        [HttpGet("orders/{id:int}")]
-        public async Task<IActionResult> GetOrder(int id, CancellationToken ct)
-        {
-            string? errorMessage = _inputChecker.CheckOrderId(id);
-            if (errorMessage != null) return BadRequest(errorMessage);
-
-            Order? res = _dbService.GetOrder(id);
-            if (res == null)
-            {
-                //_logger.LogWarning($"No order { id }");
-                return BadRequest("Заказа с заданым id не существует");
-            }
-
-            bool isComplete = await _paymentClient.GetPayment(id, ct);
-
-            if (ct.IsCancellationRequested) return StatusCode(499);
-
-            //_logger.LogWarning($"Order { id }");
-            return Json(new CompletableOrder(res, isComplete));
-        }
-
-        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        //public IActionResult Error()
-        //{
-        //    return Error();
-        //}
     }
 }
