@@ -5,6 +5,7 @@ using OrderService.WebApi.Refit;
 using Mediator;
 using FluentValidation;
 using OrderService.WebApi.Validators;
+using OrderService.WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ string connString = builder.Configuration["ConnectionStrings:Postgres"];
 string paymentAddress = builder.Configuration["Addresses:PaymentService"];
 
 // Add services to the container.
+builder.Services.AddSingleton<ProducerService>();
 builder.Services.AddDbContext<DataBaseContext>(options => options.UseNpgsql(connString));
 builder.Services.AddRefitClient<IPaymentClient>().ConfigureHttpClient(c => c.BaseAddress = new Uri(paymentAddress));
 builder.Services.AddControllersWithViews();
