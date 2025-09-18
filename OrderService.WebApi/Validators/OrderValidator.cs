@@ -18,7 +18,7 @@ namespace OrderService.WebApi.Validators
         public OrderValidator(IConfiguration configuration)
         {
             _maxEmailLength = int.Parse(configuration["InputLimits:MaxEmailLength"] ?? "254");
-            _allowedEmailChars = configuration["InputLimis:AllowedEmailChars"] ?? "";
+            _allowedEmailChars = configuration["InputLimits:AllowedEmailChars"] ?? "";
 
             RuleFor(o => o.ProductId).NotEmpty().WithMessage("ProductId должен быть заполнен");
             RuleFor(o => o.ProductId).GreaterThan(-1).WithMessage("ProductId не может быть отрицательным");
