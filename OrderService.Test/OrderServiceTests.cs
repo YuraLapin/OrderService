@@ -3,6 +3,8 @@ using Testcontainers.PostgreSql;
 using OrderService.WebApi;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
+using Newtonsoft.Json;
+using OrderService.DataAccess.Postgres.Models;
 
 namespace OrderService.Test
 {
@@ -88,17 +90,76 @@ namespace OrderService.Test
         }
 
         [Test]
-        [TestCase("1", "123@gmail.com", "2.0", "89504468003", "OK")]
-        [TestCase("-1", "123@gmail.com", "2.0", "89504468003", "BadRequest")]
-        [TestCase("1", ";123", "2.0", "89504468003", "BadRequest")]
-        [TestCase("1", "123", "2.0", "89504468003", "BadRequest")]
-        [TestCase("1", "123@gmail.com", "-2.0", "89504468003", "BadRequest")]
-        [TestCase("1", "123@gmail.com", "2.0", "123", "BadRequest")]
-        public async Task OrderCreateTest(string productId, string emailClient, string price, string phoneNumber, string expected)
+        [TestCase(1, "123@gmail.com", 2.0, "89504468003", "OK")]
+        [TestCase(-1, "123@gmail.com", 2.0, "89504468003", "BadRequest")]
+        [TestCase(1, ";123", 2.0, "89504468003", "BadRequest")]
+        [TestCase(1, "123", 2.0, "89504468003", "BadRequest")]
+        [TestCase(1, "123@gmail.com", -2.0, "89504468003", "BadRequest")]
+        [TestCase(1, "123@gmail.com", 2.0, "123", "BadRequest")]
+        public async Task OrderCreateTest(long productId, string emailClient, decimal price, string phoneNumber, string expected)
         {
             HttpResponseMessage res = await _httpClient.PostAsync($"/orders/create?productId={productId}&emailClient={emailClient}&price={price}&phoneNumber={phoneNumber}", null);
             string actual = res.StatusCode.ToString();
 
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        [TestCase(1, "123@gmail.com", 2.0, "89504468003")]
+        [TestCase(999, "123123123123@gmail.com", 1312321321.2321, "89504468003")]
+        public async Task OrderGetTest(long productId, string emailClient, decimal price, string phoneNumber)
+        {
+            HttpResponseMessage res = await _httpClient.PostAsync($"/orders/create?productId={productId}&emailClient={emailClient}&price={price}&phoneNumber={phoneNumber}", null);
+            string addedId = await res.Content.ReadAsStringAsync();
+
+            Order expected = new Order()
+            {
+                Id = long.Parse(addedId),
+                ProductId = productId,
+                EmailClient = emailClient,
+                Price = price,
+                PhoneNumber = phoneNumber,
+            };
+
+            res = await _httpClient.GetAsync($"/orders/{addedId}");
+            string resString = await res.Content.ReadAsStringAsync();
+            Order actual = JsonConvert.DeserializeObject<Order>(resString);
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        [TestCase(-1)]
+        [TestCase(92929)]
+        public async Task OrderGetWrongTest(long orderId)
+        {
+            string expected = "BadRequest";
+
+            HttpResponseMessage res = await _httpClient.GetAsync($"/orders/{orderId}");
+            string actual = res.StatusCode.ToString();
+
+            Assert.That(actual, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public async Task OrderDeleteTest()
+        {
+            HttpResponseMessage res = await _httpClient.PostAsync($"/orders/create?productId=1&emailClient=123@gmail.com&price=1.0&phoneNumber=89504468003", null);
+            string addedId = await res.Content.ReadAsStringAsync();
+
+            res = await _httpClient.DeleteAsync($"/orders/{addedId}");
+            string expected = "OK";
+            string actual = res.StatusCode.ToString();
+            Assert.That(actual, Is.EqualTo(expected));
+
+            res = await _httpClient.DeleteAsync($"/orders/{addedId}");
+            expected = "BadRequest";
+            actual = res.StatusCode.ToString();
+            Assert.That(actual, Is.EqualTo(expected));
+
+            res = await _httpClient.DeleteAsync($"/orders/{-2}");
+            expected = "BadRequest";
+            actual = res.StatusCode.ToString();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
