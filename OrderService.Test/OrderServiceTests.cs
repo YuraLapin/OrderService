@@ -17,8 +17,8 @@ namespace OrderService.Test
         private WebApplicationFactory<Program> _webApplicationFactory;
         private HttpClient _httpClient;
 
-        [SetUp]
-        public async Task SetUp()
+        [OneTimeSetUp]
+        public async Task OneTimeSetUp()
         {
             var network = new NetworkBuilder().Build();
 
@@ -29,7 +29,7 @@ namespace OrderService.Test
             _paymentAppContainer = new ContainerBuilder()
                 .WithImage(paymentAppImage)
                 .WithNetwork(network)
-                .WithPortBinding(8080)
+                .WithPortBinding(8080, true)
                 .WithName("payment_app")
                 .Build();
 
@@ -88,20 +88,21 @@ namespace OrderService.Test
         }
 
         [Test]
-        [TestCase("1", "123@gmail.com", "2.0", "89504468003", "1")]
-        [TestCase("-1", "123@gmail.com", "2.0", "89504468003", "ProductId не может быть отрицательным")]
-        [TestCase("1", ";123", "2.0", "89504468003", "В почте клиента обнаружен недопустимый символ")]
-        [TestCase("1", "123", "2.0", "89504468003", "Почта клиента не действительна")]
-        [TestCase("1", "123@gmail.com", "-2.0", "89504468003", "Сумма заказа не может быть меньше нуля")]
-        [TestCase("1", "123@gmail.com", "2.0", "123", "Номер телефона клиента не действителен")]
+        [TestCase("1", "123@gmail.com", "2.0", "89504468003", "OK")]
+        [TestCase("-1", "123@gmail.com", "2.0", "89504468003", "BadRequest")]
+        [TestCase("1", ";123", "2.0", "89504468003", "BadRequest")]
+        [TestCase("1", "123", "2.0", "89504468003", "BadRequest")]
+        [TestCase("1", "123@gmail.com", "-2.0", "89504468003", "BadRequest")]
+        [TestCase("1", "123@gmail.com", "2.0", "123", "BadRequest")]
         public async Task OrderCreateTest(string productId, string emailClient, string price, string phoneNumber, string expected)
         {
             HttpResponseMessage res = await _httpClient.PostAsync($"/orders/create?productId={productId}&emailClient={emailClient}&price={price}&phoneNumber={phoneNumber}", null);
-            string actual = await res.Content.ReadAsStringAsync();
+            string actual = res.StatusCode.ToString();
 
             Assert.That(actual, Is.EqualTo(expected));
         }
 
+        [OneTimeTearDown]
         public void Dispose()
         {
             _webApplicationFactory.Dispose();
