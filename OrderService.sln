@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.WebApi", "Orde
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.DataAccess.Postgres", "OrderService.DataAccess.Postgres\OrderService.DataAccess.Postgres.csproj", "{87B74B00-7387-4044-A221-98F3E0154A63}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Test", "OrderService.Test\OrderService.Test.csproj", "{5D74F9EA-9696-4BFB-ABCC-EF8703E40ECD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{87B74B00-7387-4044-A221-98F3E0154A63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87B74B00-7387-4044-A221-98F3E0154A63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87B74B00-7387-4044-A221-98F3E0154A63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D74F9EA-9696-4BFB-ABCC-EF8703E40ECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D74F9EA-9696-4BFB-ABCC-EF8703E40ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D74F9EA-9696-4BFB-ABCC-EF8703E40ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D74F9EA-9696-4BFB-ABCC-EF8703E40ECD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

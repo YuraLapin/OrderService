@@ -24,7 +24,6 @@ namespace OrderService.WebApi.Validators
             RuleFor(o => o.ProductId).GreaterThan(-1).WithMessage("ProductId не может быть отрицательным");
 
             RuleFor(o => o.EmailClient).NotEmpty().WithMessage("Email должен быть заполнен");
-            RuleFor(o => o.EmailClient).Length(_minEmailLength, _maxEmailLength).WithMessage("Email слишком длинный");
             RuleFor(o => o.EmailClient).Must(HaveOnlyAllowedChars).WithMessage("В почте клиента обнаружен недопустимый символ");
             RuleFor(o => o.EmailClient).Must(MatchEmailPattern).WithMessage("Почта клиента не действительна");
 
@@ -32,7 +31,6 @@ namespace OrderService.WebApi.Validators
             RuleFor(o => o.Price).GreaterThan(-1).WithMessage("Сумма заказа не может быть меньше нуля");
 
             RuleFor(o => o.PhoneNumber).NotEmpty().WithMessage("PhoneNumber должен быть заполнен");
-            RuleFor(o => o.PhoneNumber).Length(_phoneNumberMinSize, _phoneNumberMaxSize).WithMessage("PhoneNumber слишком длинный");
             RuleFor(o => o.PhoneNumber).Must(MatchPhoneNumberPattern).WithMessage("Номер телефона клиента не действителен");
         }
 
