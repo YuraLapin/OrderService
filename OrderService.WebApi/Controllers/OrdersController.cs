@@ -33,7 +33,7 @@ namespace OrderService.WebApi.Controllers
         // Токен отмены
         // </param>
         [HttpPost("create")]
-        public async Task<IActionResult> AddOrder(Order order, CancellationToken ct)
+        public async Task<IActionResult> AddOrder([FromBody] Order order, CancellationToken ct)
         {
             Object res = await _mediator.Send(new AddOrderCommand(order), ct);
 

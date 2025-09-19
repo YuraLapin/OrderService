@@ -3,8 +3,11 @@ using Testcontainers.PostgreSql;
 using OrderService.WebApi;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
-using Newtonsoft.Json;
+using Refit;
 using OrderService.DataAccess.Postgres.Models;
+using OrderService.Test.Refit;
+using DotNet.Testcontainers.Networks;
+using DotNet.Testcontainers.Images;
 
 namespace OrderService.Test
 {
@@ -12,23 +15,23 @@ namespace OrderService.Test
     // Тесты для сервиса заказов
     // </summary>
     [TestFixture]
-    public sealed class OrderServiceTests : IDisposable
+    public sealed class OrderServiceTests
     {
         private readonly PostgreSqlContainer _orderDbContainer = new PostgreSqlBuilder().Build();
         private IContainer _paymentAppContainer;
         private IContainer _paymentDbContainer;
         private WebApplicationFactory<Program> _webApplicationFactory;
-        private HttpClient _httpClient;
+        private IOrderApi _orderApi;
 
         // <summary>
-        // Разворачивание контейнеров с зависимыми сервисами
+        // Разворачивание контейнеров с необходимыми сервисами
         // </summary>
         [OneTimeSetUp]
-        public async Task OneTimeSetUp()
+        public async Task Setup()
         {
-            var network = new NetworkBuilder().Build();
+            INetwork network = new NetworkBuilder().Build();
 
-            var paymentAppImage = new ImageFromDockerfileBuilder()
+            IFutureDockerImage paymentAppImage = new ImageFromDockerfileBuilder()
                 .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), "..")
                 .WithDockerfile("PaymentService/dockerfile")
                 .Build();
@@ -57,11 +60,9 @@ namespace OrderService.Test
             // Порт, по которому можно обратиться к сервису оплаты
             int paymentAppPort = _paymentAppContainer.GetMappedPublicPort();
 
-            var clientOptions = new WebApplicationFactoryClientOptions();
-            clientOptions.AllowAutoRedirect = false;
-
             _webApplicationFactory = new CustomWebApplicationFactory(_orderDbContainer.GetConnectionString(), paymentAppPort);
-            _httpClient = _webApplicationFactory.CreateClient(clientOptions);
+            HttpClient httpClient = _webApplicationFactory.CreateClient();
+            _orderApi = RestService.For<IOrderApi>(httpClient);
         }
 
         // <summary>
@@ -74,9 +75,17 @@ namespace OrderService.Test
         [TestCase(1, "123", 2.0, "89504468003", "BadRequest")]
         [TestCase(1, "123@gmail.com", -2.0, "89504468003", "BadRequest")]
         [TestCase(1, "123@gmail.com", 2.0, "123", "BadRequest")]
-        public async Task OrderCreateTest(long productId, string emailClient, decimal price, string phoneNumber, string expected)
+        public async Task CreateOrderTest(long productId, string emailClient, decimal price, string phoneNumber, string expected)
         {
-            HttpResponseMessage res = await _httpClient.PostAsync($"/orders/create?productId={productId}&emailClient={emailClient}&price={price}&phoneNumber={phoneNumber}", null);
+            Order newOrder = new Order()
+            {
+                ProductId = productId,
+                EmailClient = emailClient,
+                Price = price,
+                PhoneNumber = phoneNumber,
+            };
+
+            ApiResponse<long> res = await _orderApi.AddOrder(newOrder);
             string actual = res.StatusCode.ToString();
 
             Assert.That(actual, Is.EqualTo(expected));
@@ -88,23 +97,22 @@ namespace OrderService.Test
         [Test]
         [TestCase(1, "123@gmail.com", 2.0, "89504468003")]
         [TestCase(999, "123123123123@gmail.com", 1312321321.2321, "89504468003")]
-        public async Task OrderGetTest(long productId, string emailClient, decimal price, string phoneNumber)
+        public async Task GetOrderTest(long productId, string emailClient, decimal price, string phoneNumber)
         {
-            HttpResponseMessage res = await _httpClient.PostAsync($"/orders/create?productId={productId}&emailClient={emailClient}&price={price}&phoneNumber={phoneNumber}", null);
-            string addedId = await res.Content.ReadAsStringAsync();
-
             Order expected = new Order()
             {
-                Id = long.Parse(addedId),
                 ProductId = productId,
                 EmailClient = emailClient,
                 Price = price,
                 PhoneNumber = phoneNumber,
             };
 
-            res = await _httpClient.GetAsync($"/orders/{addedId}");
-            string resString = await res.Content.ReadAsStringAsync();
-            Order actual = JsonConvert.DeserializeObject<Order>(resString);
+            ApiResponse<long> addOrderRes = await _orderApi.AddOrder(expected);
+            long addedId = addOrderRes.Content;
+            expected.Id = addedId;
+
+            ApiResponse<Order> getOrderRes = await _orderApi.GetOrder(addedId);
+            Order actual= getOrderRes.Content;
 
             Assert.That(actual, Is.EqualTo(expected));
         }
@@ -115,11 +123,11 @@ namespace OrderService.Test
         [Test]
         [TestCase(-1)]
         [TestCase(92929)]
-        public async Task OrderGetWrongTest(long orderId)
+        public async Task GetWrongOrderTest(long orderId)
         {
             string expected = "BadRequest";
 
-            HttpResponseMessage res = await _httpClient.GetAsync($"/orders/{orderId}");
+            ApiResponse<Order> res = await _orderApi.GetOrder(orderId);
             string actual = res.StatusCode.ToString();
 
             Assert.That(actual, Is.EqualTo(expected));
@@ -129,28 +137,36 @@ namespace OrderService.Test
         // Тесты удаления
         // </summary>
         [Test]
-        public async Task OrderDeleteTest()
+        public async Task DeleteOrderTest()
         {
+            Order newOrder = new Order()
+            {
+                ProductId = 1,
+                EmailClient = "123@gmail.com",
+                Price = 1.0M,
+                PhoneNumber = "89504468003"
+            };
+
             // Создание заказа
-            HttpResponseMessage res = await _httpClient.PostAsync($"/orders/create?productId=1&emailClient=123@gmail.com&price=1.0&phoneNumber=89504468003", null);
-            string addedId = await res.Content.ReadAsStringAsync();
+            ApiResponse<long> addOrderRes = await _orderApi.AddOrder(newOrder);
+            long addedId = addOrderRes.Content;
 
             // Удаление созданного заказа
-            res = await _httpClient.DeleteAsync($"/orders/{addedId}");
+            ApiResponse<string> deleteOrderRes = await _orderApi.DeleteOrder(addedId);
             string expected = "OK";
-            string actual = res.StatusCode.ToString();
+            string actual = deleteOrderRes.StatusCode.ToString();
             Assert.That(actual, Is.EqualTo(expected));
 
-            // Удалене уже удаленного заказа
-            res = await _httpClient.DeleteAsync($"/orders/{addedId}");
+            // Удаление уже удаленного заказа
+            deleteOrderRes = await _orderApi.DeleteOrder(addedId);
             expected = "BadRequest";
-            actual = res.StatusCode.ToString();
+            actual = deleteOrderRes.StatusCode.ToString();
             Assert.That(actual, Is.EqualTo(expected));
 
             // Удаление заказа с отрицательным Id
-            res = await _httpClient.DeleteAsync($"/orders/{-2}");
+            deleteOrderRes = await _orderApi.DeleteOrder(-2);
             expected = "BadRequest";
-            actual = res.StatusCode.ToString();
+            actual = deleteOrderRes.StatusCode.ToString();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
@@ -158,13 +174,13 @@ namespace OrderService.Test
         // Сворачивание контейнеров
         // </summary>
         [OneTimeTearDown]
-        public void Dispose()
+        public async Task Teardown()
         {
-            _webApplicationFactory.Dispose();
+            await _webApplicationFactory.DisposeAsync();
 
-            _orderDbContainer.DisposeAsync();
-            _paymentAppContainer.DisposeAsync();
-            _paymentDbContainer.DisposeAsync();
+            await _orderDbContainer.DisposeAsync();
+            await _paymentAppContainer.DisposeAsync();
+            await _paymentDbContainer.DisposeAsync();
         }
     }
 }
