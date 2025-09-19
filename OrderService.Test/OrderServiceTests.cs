@@ -8,6 +8,9 @@ using OrderService.DataAccess.Postgres.Models;
 
 namespace OrderService.Test
 {
+    // <summary>
+    // Тесты для сервиса заказов
+    // </summary>
     [TestFixture]
     public sealed class OrderServiceTests : IDisposable
     {
@@ -17,6 +20,9 @@ namespace OrderService.Test
         private WebApplicationFactory<Program> _webApplicationFactory;
         private HttpClient _httpClient;
 
+        // <summary>
+        // Разворачивание контейнеров с зависимыми сервисами
+        // </summary>
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
         {
@@ -48,6 +54,7 @@ namespace OrderService.Test
             await _paymentAppContainer.StartAsync();
             await _paymentDbContainer.StartAsync();
 
+            // Порт, по которому можно обратиться к сервису оплаты
             int paymentAppPort = _paymentAppContainer.GetMappedPublicPort();
 
             var clientOptions = new WebApplicationFactoryClientOptions();
@@ -57,6 +64,9 @@ namespace OrderService.Test
             _httpClient = _webApplicationFactory.CreateClient(clientOptions);
         }
 
+        // <summary>
+        // Тесты для создания заказа
+        // </summary>
         [Test]
         [TestCase(1, "123@gmail.com", 2.0, "89504468003", "OK")]
         [TestCase(-1, "123@gmail.com", 2.0, "89504468003", "BadRequest")]
@@ -72,6 +82,9 @@ namespace OrderService.Test
             Assert.That(actual, Is.EqualTo(expected));
         }
 
+        // <summary>
+        // Тесты создания, а затем получения созданного заказа
+        // </summary>
         [Test]
         [TestCase(1, "123@gmail.com", 2.0, "89504468003")]
         [TestCase(999, "123123123123@gmail.com", 1312321321.2321, "89504468003")]
@@ -96,6 +109,9 @@ namespace OrderService.Test
             Assert.That(actual, Is.EqualTo(expected));
         }
 
+        // <summary>
+        // Тесты получения несуществующего заказа
+        // </summary>
         [Test]
         [TestCase(-1)]
         [TestCase(92929)]
@@ -109,28 +125,38 @@ namespace OrderService.Test
             Assert.That(actual, Is.EqualTo(expected));
         }
 
+        // <summary>
+        // Тесты удаления
+        // </summary>
         [Test]
         public async Task OrderDeleteTest()
         {
+            // Создание заказа
             HttpResponseMessage res = await _httpClient.PostAsync($"/orders/create?productId=1&emailClient=123@gmail.com&price=1.0&phoneNumber=89504468003", null);
             string addedId = await res.Content.ReadAsStringAsync();
 
+            // Удаление созданного заказа
             res = await _httpClient.DeleteAsync($"/orders/{addedId}");
             string expected = "OK";
             string actual = res.StatusCode.ToString();
             Assert.That(actual, Is.EqualTo(expected));
 
+            // Удалене уже удаленного заказа
             res = await _httpClient.DeleteAsync($"/orders/{addedId}");
             expected = "BadRequest";
             actual = res.StatusCode.ToString();
             Assert.That(actual, Is.EqualTo(expected));
 
+            // Удаление заказа с отрицательным Id
             res = await _httpClient.DeleteAsync($"/orders/{-2}");
             expected = "BadRequest";
             actual = res.StatusCode.ToString();
             Assert.That(actual, Is.EqualTo(expected));
         }
 
+        // <summary>
+        // Сворачивание контейнеров
+        // </summary>
         [OneTimeTearDown]
         public void Dispose()
         {
