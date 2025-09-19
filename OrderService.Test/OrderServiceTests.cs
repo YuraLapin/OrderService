@@ -14,8 +14,6 @@ namespace OrderService.Test
         private readonly PostgreSqlContainer _orderDbContainer = new PostgreSqlBuilder().Build();
         private IContainer _paymentAppContainer;
         private IContainer _paymentDbContainer;
-        private IContainer _kafkaContainer;
-        private IContainer _notificationAppContainer;
         private WebApplicationFactory<Program> _webApplicationFactory;
         private HttpClient _httpClient;
 
@@ -44,41 +42,11 @@ namespace OrderService.Test
                 .WithName("payment_db")
                 .Build();
 
-            _kafkaContainer = new ContainerBuilder()
-                .WithImage("apache/kafka:latest")
-                .WithNetwork(network)
-                .WithExposedPort(9092)
-                .WithEnvironment("KAFKA_LISTENERS", "CONTROLLER://localhost:9091,HOST://0.0.0.0:9092,DOCKER://0.0.0.0:9093")
-                .WithEnvironment("KAFKA_ADVERTISED_LISTENERS", "HOST://localhost:9092,DOCKER://kafka:9093")
-                .WithEnvironment("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "CONTROLLER:PLAINTEXT,DOCKER:PLAINTEXT,HOST:PLAINTEXT")
-                .WithEnvironment("KAFKA_NODE_ID", "1")
-                .WithEnvironment("KAFKA_PROCESS_ROLES", "broker,controller")
-                .WithEnvironment("KAFKA_CONTROLLER_LISTENER_NAMES", "CONTROLLER")
-                .WithEnvironment("KAFKA_CONTROLLER_QUORUM_VOTERS", "1@localhost:9091")
-                .WithEnvironment("KAFKA_INTER_BROKER_LISTENER_NAME", "DOCKER")
-                .WithEnvironment("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", "1")
-                .WithName("kafka")
-                .Build();
-
-            var notificationAppImage = new ImageFromDockerfileBuilder()
-                .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), "..")
-                .WithDockerfile("NotificationService/dockerfile")
-                .Build();
-            _notificationAppContainer = new ContainerBuilder()
-                .WithImage(notificationAppImage)
-                .WithNetwork(network)
-                .WithExposedPort(8082)
-                .WithName("notification_app")
-                .Build();
-
             await paymentAppImage.CreateAsync().ConfigureAwait(false);
-            await notificationAppImage.CreateAsync().ConfigureAwait(false);
 
             await _orderDbContainer.StartAsync();
             await _paymentAppContainer.StartAsync();
             await _paymentDbContainer.StartAsync();
-            await _kafkaContainer.StartAsync();
-            await _notificationAppContainer.StartAsync();
 
             int paymentAppPort = _paymentAppContainer.GetMappedPublicPort();
 
@@ -171,8 +139,6 @@ namespace OrderService.Test
             _orderDbContainer.DisposeAsync();
             _paymentAppContainer.DisposeAsync();
             _paymentDbContainer.DisposeAsync();
-            _kafkaContainer.DisposeAsync();
-            _notificationAppContainer.DisposeAsync();
         }
     }
 }
