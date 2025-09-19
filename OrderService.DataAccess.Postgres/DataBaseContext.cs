@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OrderService.DataAccess.Postgres.Configurations;
 using OrderService.DataAccess.Postgres.Models;
 

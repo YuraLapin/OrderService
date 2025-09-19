@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+п»їusing Microsoft.AspNetCore.Mvc;
 using Mediator;
 using OrderService.DataAccess.Postgres.Models;
 using OrderService.WebApi.UseCases.Commands;
@@ -6,7 +6,7 @@ using OrderService.WebApi.UseCases.Commands;
 namespace OrderService.WebApi.Controllers
 {
     // <summary>
-    // Контроллер для адреса /orders
+    // РљРѕРЅС‚СЂРѕР»Р»РµСЂ РґР»СЏ Р°РґСЂРµСЃР° /orders
     // </summary>
     [Route("orders")]
     public class OrdersController : Controller
@@ -19,18 +19,18 @@ namespace OrderService.WebApi.Controllers
         }
 
         // <summary>
-        // Добавляет заказ в БД, отправляет
-        // данные в Payment Service для
-        // резервирования оплаты
+        // Р”РѕР±Р°РІР»СЏРµС‚ Р·Р°РєР°Р· РІ Р‘Р”, РѕС‚РїСЂР°РІР»СЏРµС‚
+        // РґР°РЅРЅС‹Рµ РІ Payment Service РґР»СЏ
+        // СЂРµР·РµСЂРІРёСЂРѕРІР°РЅРёСЏ РѕРїР»Р°С‚С‹
         // </summary>
         // <returns>
-        // Id созданного заказа
+        // Id СЃРѕР·РґР°РЅРЅРѕРіРѕ Р·Р°РєР°Р·Р°
         // </returns>
         // <param name="order">
-        // Добавляемый заказ
+        // Р”РѕР±Р°РІР»СЏРµРјС‹Р№ Р·Р°РєР°Р·
         // </param>
         // <param name="ct">
-        // Токен отмены
+        // РўРѕРєРµРЅ РѕС‚РјРµРЅС‹
         // </param>
         [HttpPost("create")]
         public async Task<IActionResult> AddOrder([FromBody] Order order, CancellationToken ct)
@@ -46,16 +46,16 @@ namespace OrderService.WebApi.Controllers
         }
 
         // <summary>
-        // Получает заказ из БД по его Id
+        // РџРѕР»СѓС‡Р°РµС‚ Р·Р°РєР°Р· РёР· Р‘Р” РїРѕ РµРіРѕ Id
         // </summary>
         // <returns>
-        // Требуемый заказ
+        // РўСЂРµР±СѓРµРјС‹Р№ Р·Р°РєР°Р·
         // </returns>
         // <param name="orderId">
-        // Id получаемого заказа
+        // Id РїРѕР»СѓС‡Р°РµРјРѕРіРѕ Р·Р°РєР°Р·Р°
         // </param>
         // <param name="ct">
-        // Токен отмены
+        // РўРѕРєРµРЅ РѕС‚РјРµРЅС‹
         // </param>
         [HttpGet("{orderId:long}")]
         public async Task<IActionResult> GetOrder(long orderId, CancellationToken ct)
@@ -71,13 +71,13 @@ namespace OrderService.WebApi.Controllers
         }
 
         // <summary>
-        // Удаляет заказ из БД по его Id
+        // РЈРґР°Р»СЏРµС‚ Р·Р°РєР°Р· РёР· Р‘Р” РїРѕ РµРіРѕ Id
         // </summary>
         // <param name="orderId">
-        // Id удаляемого заказа
+        // Id СѓРґР°Р»СЏРµРјРѕРіРѕ Р·Р°РєР°Р·Р°
         // </param>
         // <param name="ct">
-        // Токен отмены
+        // РўРѕРєРµРЅ РѕС‚РјРµРЅС‹
         // </param>
         [HttpDelete("{orderId:long}")]
         public async Task<IActionResult> DeleteOrder(long orderId, CancellationToken ct)

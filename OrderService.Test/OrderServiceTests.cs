@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.Testing;
+п»їusing Microsoft.AspNetCore.Mvc.Testing;
 using Testcontainers.PostgreSql;
 using OrderService.WebApi;
 using DotNet.Testcontainers.Builders;
@@ -12,7 +12,7 @@ using DotNet.Testcontainers.Images;
 namespace OrderService.Test
 {
     // <summary>
-    // Тесты для сервиса заказов
+    // РўРµСЃС‚С‹ РґР»СЏ СЃРµСЂРІРёСЃР° Р·Р°РєР°Р·РѕРІ
     // </summary>
     [TestFixture]
     public sealed class OrderServiceTests
@@ -24,7 +24,7 @@ namespace OrderService.Test
         private IOrderApi _orderApi;
 
         // <summary>
-        // Разворачивание контейнеров с необходимыми сервисами
+        // Р Р°Р·РІРѕСЂР°С‡РёРІР°РЅРёРµ РєРѕРЅС‚РµР№РЅРµСЂРѕРІ СЃ РЅРµРѕР±С…РѕРґРёРјС‹РјРё СЃРµСЂРІРёСЃР°РјРё
         // </summary>
         [OneTimeSetUp]
         public async Task Setup()
@@ -57,7 +57,7 @@ namespace OrderService.Test
             await _paymentAppContainer.StartAsync();
             await _paymentDbContainer.StartAsync();
 
-            // Порт, по которому можно обратиться к сервису оплаты
+            // РџРѕСЂС‚, РїРѕ РєРѕС‚РѕСЂРѕРјСѓ РјРѕР¶РЅРѕ РѕР±СЂР°С‚РёС‚СЊСЃСЏ Рє СЃРµСЂРІРёСЃСѓ РѕРїР»Р°С‚С‹
             int paymentAppPort = _paymentAppContainer.GetMappedPublicPort();
 
             _webApplicationFactory = new CustomWebApplicationFactory(_orderDbContainer.GetConnectionString(), paymentAppPort);
@@ -66,7 +66,7 @@ namespace OrderService.Test
         }
 
         // <summary>
-        // Тесты для создания заказа
+        // РўРµСЃС‚С‹ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ Р·Р°РєР°Р·Р°
         // </summary>
         [Test]
         [TestCase(1, "123@gmail.com", 2.0, "89504468003", "OK")]
@@ -92,7 +92,7 @@ namespace OrderService.Test
         }
 
         // <summary>
-        // Тесты создания, а затем получения созданного заказа
+        // РўРµСЃС‚С‹ СЃРѕР·РґР°РЅРёСЏ, Р° Р·Р°С‚РµРј РїРѕР»СѓС‡РµРЅРёСЏ СЃРѕР·РґР°РЅРЅРѕРіРѕ Р·Р°РєР°Р·Р°
         // </summary>
         [Test]
         [TestCase(1, "123@gmail.com", 2.0, "89504468003")]
@@ -118,7 +118,7 @@ namespace OrderService.Test
         }
 
         // <summary>
-        // Тесты получения несуществующего заказа
+        // РўРµСЃС‚С‹ РїРѕР»СѓС‡РµРЅРёСЏ РЅРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРіРѕ Р·Р°РєР°Р·Р°
         // </summary>
         [Test]
         [TestCase(-1)]
@@ -134,7 +134,7 @@ namespace OrderService.Test
         }
 
         // <summary>
-        // Тесты удаления
+        // РўРµСЃС‚С‹ СѓРґР°Р»РµРЅРёСЏ Р·Р°РєР°Р·Р°
         // </summary>
         [Test]
         public async Task DeleteOrderTest()
@@ -147,23 +147,23 @@ namespace OrderService.Test
                 PhoneNumber = "89504468003"
             };
 
-            // Создание заказа
+            // РЎРѕР·РґР°РЅРёРµ Р·Р°РєР°Р·Р°
             ApiResponse<long> addOrderRes = await _orderApi.AddOrder(newOrder);
             long addedId = addOrderRes.Content;
 
-            // Удаление созданного заказа
+            // РЈРґР°Р»РµРЅРёРµ СЃРѕР·РґР°РЅРЅРѕРіРѕ Р·Р°РєР°Р·Р°
             ApiResponse<string> deleteOrderRes = await _orderApi.DeleteOrder(addedId);
             string expected = "OK";
             string actual = deleteOrderRes.StatusCode.ToString();
             Assert.That(actual, Is.EqualTo(expected));
 
-            // Удаление уже удаленного заказа
+            // РЈРґР°Р»РµРЅРёРµ СѓР¶Рµ СѓРґР°Р»РµРЅРЅРѕРіРѕ Р·Р°РєР°Р·Р°
             deleteOrderRes = await _orderApi.DeleteOrder(addedId);
             expected = "BadRequest";
             actual = deleteOrderRes.StatusCode.ToString();
             Assert.That(actual, Is.EqualTo(expected));
 
-            // Удаление заказа с отрицательным Id
+            // РЈРґР°Р»РµРЅРёРµ Р·Р°РєР°Р·Р° СЃ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рј Id
             deleteOrderRes = await _orderApi.DeleteOrder(-2);
             expected = "BadRequest";
             actual = deleteOrderRes.StatusCode.ToString();
@@ -171,7 +171,7 @@ namespace OrderService.Test
         }
 
         // <summary>
-        // Сворачивание контейнеров
+        // РЎРІРѕСЂР°С‡РёРІР°РЅРёРµ РєРѕРЅС‚РµР№РЅРµСЂРѕРІ
         // </summary>
         [OneTimeTearDown]
         public async Task Teardown()
