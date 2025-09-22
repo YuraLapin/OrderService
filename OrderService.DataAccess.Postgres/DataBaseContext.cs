@@ -1,12 +1,12 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using OrderService.DataAccess.Postgres.Configurations;
 using OrderService.DataAccess.Postgres.Models;
 
 namespace OrderService.DataAccess.Postgres
 {
-    // <summary>
-    // Контекст базы данных
-    // </summary>
+    /// <summary>
+    /// Контекст базы данных
+    /// </summary>
     public class DataBaseContext: DbContext
     {
         public DbSet<Order> Orders { get; set; }
