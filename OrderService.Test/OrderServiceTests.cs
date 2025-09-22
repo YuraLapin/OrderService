@@ -11,9 +11,9 @@ using DotNet.Testcontainers.Images;
 
 namespace OrderService.Test
 {
-    // <summary>
-    // Тесты для сервиса заказов
-    // </summary>
+    /// <summary>
+    /// Тесты для сервиса заказов
+    /// </summary>
     [TestFixture]
     public sealed class OrderServiceTests
     {
@@ -23,9 +23,9 @@ namespace OrderService.Test
         private WebApplicationFactory<Program> _webApplicationFactory;
         private IOrderApi _orderApi;
 
-        // <summary>
-        // Разворачивание контейнеров с необходимыми сервисами
-        // </summary>
+        /// <summary>
+        /// Разворачивание контейнеров с необходимыми сервисами
+        /// </summary>
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -65,9 +65,9 @@ namespace OrderService.Test
             _orderApi = RestService.For<IOrderApi>(httpClient);
         }
 
-        // <summary>
-        // Тесты для создания заказа
-        // </summary>
+        /// <summary>
+        /// Тесты для создания заказа
+        /// </summary>
         [Test]
         [TestCase(1, "123@gmail.com", 2.0, "89504468003", "OK")]
         [TestCase(-1, "123@gmail.com", 2.0, "89504468003", "BadRequest")]
@@ -91,9 +91,9 @@ namespace OrderService.Test
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        // <summary>
-        // Тесты создания, а затем получения созданного заказа
-        // </summary>
+        /// <summary>
+        /// Тесты создания, а затем получения созданного заказа
+        /// </summary>
         [Test]
         [TestCase(1, "123@gmail.com", 2.0, "89504468003")]
         [TestCase(999, "123123123123@gmail.com", 1312321321.2321, "89504468003")]
@@ -117,9 +117,9 @@ namespace OrderService.Test
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        // <summary>
-        // Тесты получения несуществующего заказа
-        // </summary>
+        /// <summary>
+        /// Тесты получения несуществующего заказа
+        /// </summary>
         [Test]
         [TestCase(-1)]
         [TestCase(92929)]
@@ -133,9 +133,9 @@ namespace OrderService.Test
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        // <summary>
-        // Тесты удаления заказа
-        // </summary>
+        /// <summary>
+        /// Тесты удаления заказа
+        /// </summary>
         [Test]
         public async Task DeleteOrderTest()
         {
@@ -170,9 +170,9 @@ namespace OrderService.Test
             Assert.That(actual, Is.EqualTo(expected));
         }
 
-        // <summary>
-        // Сворачивание контейнеров
-        // </summary>
+        /// <summary>
+        /// Сворачивание контейнеров
+        /// </summary>
         [OneTimeTearDown]
         public async Task Teardown()
         {

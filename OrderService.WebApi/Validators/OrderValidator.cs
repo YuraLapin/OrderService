@@ -4,9 +4,9 @@ using System.Text.RegularExpressions;
 
 namespace OrderService.WebApi.Validators
 {
-    // <summary>
-    // FluentValidation валидатор для проверки Order
-    // </summary>
+    /// <summary>
+    /// FluentValidation валидатор для проверки Order
+    /// </summary>
     public class OrderValidator : AbstractValidator<Order>
     {
         private static int _phoneNumberMinSize = 1;

@@ -5,9 +5,9 @@ using OrderService.WebApi.UseCases.Commands;
 
 namespace OrderService.WebApi.Controllers
 {
-    // <summary>
-    // Контроллер для адреса /orders
-    // </summary>
+    /// <summary>
+    /// Контроллер для адреса /orders
+    /// </summary>
     [Route("orders")]
     public class OrdersController : Controller
     {
@@ -18,20 +18,20 @@ namespace OrderService.WebApi.Controllers
             _mediator = mediator;
         }
 
-        // <summary>
-        // Добавляет заказ в БД, отправляет
-        // данные в Payment Service для
-        // резервирования оплаты
-        // </summary>
-        // <returns>
-        // Id созданного заказа
-        // </returns>
-        // <param name="order">
-        // Добавляемый заказ
-        // </param>
-        // <param name="ct">
-        // Токен отмены
-        // </param>
+        /// <summary>
+        /// Добавляет заказ в БД, отправляет
+        /// данные в Payment Service для
+        /// резервирования оплаты
+        /// </summary>
+        /// <returns>
+        /// Id созданного заказа
+        /// </returns>
+        /// <param name="order">
+        /// Добавляемый заказ
+        /// </param>
+        /// <param name="ct">
+        /// Токен отмены
+        /// </param>
         [HttpPost("create")]
         public async Task<IActionResult> AddOrder([FromBody] Order order, CancellationToken ct)
         {
@@ -45,18 +45,18 @@ namespace OrderService.WebApi.Controllers
             return Json((long)res);
         }
 
-        // <summary>
-        // Получает заказ из БД по его Id
-        // </summary>
-        // <returns>
-        // Требуемый заказ
-        // </returns>
-        // <param name="orderId">
-        // Id получаемого заказа
-        // </param>
-        // <param name="ct">
-        // Токен отмены
-        // </param>
+        /// <summary>
+        /// Получает заказ из БД по его Id
+        /// </summary>
+        /// <returns>
+        /// Требуемый заказ
+        /// </returns>
+        /// <param name="orderId">
+        /// Id получаемого заказа
+        /// </param>
+        /// <param name="ct">
+        /// Токен отмены
+        /// </param>
         [HttpGet("{orderId:long}")]
         public async Task<IActionResult> GetOrder(long orderId, CancellationToken ct)
         {
@@ -70,15 +70,15 @@ namespace OrderService.WebApi.Controllers
             return Json((Order)res);
         }
 
-        // <summary>
-        // Удаляет заказ из БД по его Id
-        // </summary>
-        // <param name="orderId">
-        // Id удаляемого заказа
-        // </param>
-        // <param name="ct">
-        // Токен отмены
-        // </param>
+        /// <summary>
+        /// Удаляет заказ из БД по его Id
+        /// </summary>
+        /// <param name="orderId">
+        /// Id удаляемого заказа
+        /// </param>
+        /// <param name="ct">
+        /// Токен отмены
+        /// </param>
         [HttpDelete("{orderId:long}")]
         public async Task<IActionResult> DeleteOrder(long orderId, CancellationToken ct)
         {

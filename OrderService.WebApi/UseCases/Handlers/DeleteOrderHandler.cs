@@ -6,25 +6,25 @@ using FluentValidation;
 
 namespace OrderService.WebApi.UseCases.Handlers
 {
-    // <summary>
-    // Обработчик для команды удаления заказа
-    // </summary>
+    /// <summary>
+    /// Обработчик для команды удаления заказа
+    /// </summary>
     public class DeleteOrderHandler(DataBaseContext db, IValidator<Order> validator) : IRequestHandler<DeleteOrderCommand, string?>
     {
-        // <summary>
-        // Удаляет заказ с заданным Id из БД
-        // </summary>
-        // <returns>
-        // null при успехе
-        // Строка с сообщением об ошибке при ошибке
-        // </returns>
-        // <param name="command">
-        // Mediator команда с полем
-        // OrderId - Id удаляемого заказа
-        // </param>
-        // <param name="ct">
-        // Токен отмены
-        // </param>
+        /// <summary>
+        /// Удаляет заказ с заданным Id из БД
+        /// </summary>
+        /// <returns>
+        /// null при успехе
+        /// Строка с сообщением об ошибке при ошибке
+        /// </returns>
+        /// <param name="command">
+        /// Mediator команда с полем
+        /// OrderId - Id удаляемого заказа
+        /// </param>
+        /// <param name="ct">
+        /// Токен отмены
+        /// </param>
         public async ValueTask<string?> Handle(DeleteOrderCommand command, CancellationToken ct)
         {
             Order? toDelete = await db.Orders.FindAsync(command.OrderId, ct);
