@@ -1,13 +1,11 @@
 ﻿using Refit;
+using OrderService.WebApi.Models;
 
-namespace OrderServiceMain.Refit
+namespace OrderService.WebApi.Refit
 {
     public interface IPaymentClient
     {
-        [Post("/payments")]
-        Task AddPayment(int id, CancellationToken ct);
-
-        [Get("/payments/{id}")]
-        Task<bool> GetPayment(int id, CancellationToken ct);
+        [Post("/payments/create")]
+        Task AddPayment(Payment payment, CancellationToken ct);
     }
 }

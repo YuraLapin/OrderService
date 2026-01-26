@@ -1,88 +1,95 @@
-using Microsoft.AspNetCore.Mvc;
-using OrderServiceDataBase;
-using OrderServiceDataBase.Models;
-using OrderServiceMain.Refit;
-using OrderServiceMain.Utility;
+﻿using Microsoft.AspNetCore.Mvc;
+using Mediator;
+using OrderService.DataAccess.Postgres.Models;
+using OrderService.WebApi.UseCases.Commands;
 
-namespace OrderService.Controllers
+namespace OrderService.WebApi.Controllers
 {
+    /// <summary>
+    /// Контроллер для адреса /orders
+    /// </summary>
+    [Route("orders")]
     public class OrdersController : Controller
     {
-        private readonly ILogger<OrdersController> _logger;
-        private readonly IConfiguration _configuration;
-        private readonly DataBaseService _dbService;
-        private readonly IPaymentClient _paymentClient;
-        private readonly InputChecker _inputChecker;
+        private readonly IMediator _mediator;
 
-        public OrdersController
-        (
-            ILogger<OrdersController> logger,
-            DataBaseService dbService,
-            IConfiguration configuration,
-            IPaymentClient paymentClient,
-            InputChecker inputChecker
-        )
+        public OrdersController(IMediator mediator)
         {
-            _logger = logger;
-            _configuration = configuration;
-            _dbService = dbService;
-            _paymentClient = paymentClient;
-            _inputChecker = inputChecker;
+            _mediator = mediator;
         }
 
-        public IActionResult Index()
+        /// <summary>
+        /// Добавляет заказ в БД, отправляет
+        /// данные в Payment Service для
+        /// резервирования оплаты
+        /// </summary>
+        /// <returns>
+        /// Id созданного заказа
+        /// </returns>
+        /// <param name="order">
+        /// Добавляемый заказ
+        /// </param>
+        /// <param name="ct">
+        /// Токен отмены
+        /// </param>
+        [HttpPost("create")]
+        public async Task<IActionResult> AddOrder([FromBody] Order order, CancellationToken ct)
         {
-            return View();
-        }
+            Object res = await _mediator.Send(new AddOrderCommand(order), ct);
 
-        [HttpPost("orders")]
-        public async Task<IActionResult> AddOrder(int sum, string clientName, CancellationToken ct)
-        {
-            //_logger.LogWarning($"Order sum{sum} name{clientName}");
-
-            string? errorMessage = _inputChecker.CheckOrder(sum, clientName);
-            if (errorMessage != null) return BadRequest(errorMessage);
-
-            var newId = await _dbService.AddOrder(sum, clientName, ct);
-
-            if (ct.IsCancellationRequested) return StatusCode(499);
-
-            await _paymentClient.AddPayment(newId, ct);
-
-            if (ct.IsCancellationRequested)
+            if (res is string)
             {
-                await _dbService.DeleteOrder(newId);
-                return StatusCode(499);
+                return BadRequest(res);
+            }
+
+            return Json((long)res);
+        }
+
+        /// <summary>
+        /// Получает заказ из БД по его Id
+        /// </summary>
+        /// <returns>
+        /// Требуемый заказ
+        /// </returns>
+        /// <param name="orderId">
+        /// Id получаемого заказа
+        /// </param>
+        /// <param name="ct">
+        /// Токен отмены
+        /// </param>
+        [HttpGet("{orderId:long}")]
+        public async Task<IActionResult> GetOrder(long orderId, CancellationToken ct)
+        {
+            Object res = await _mediator.Send(new GetOrderCommand(orderId));
+
+            if (res is string)
+            {
+                return BadRequest(res);
+            }
+
+            return Json((Order)res);
+        }
+
+        /// <summary>
+        /// Удаляет заказ из БД по его Id
+        /// </summary>
+        /// <param name="orderId">
+        /// Id удаляемого заказа
+        /// </param>
+        /// <param name="ct">
+        /// Токен отмены
+        /// </param>
+        [HttpDelete("{orderId:long}")]
+        public async Task<IActionResult> DeleteOrder(long orderId, CancellationToken ct)
+        {
+            string? res = await _mediator.Send(new DeleteOrderCommand(orderId), ct);
+
+            if (res is string)
+            {
+                return BadRequest(res);
             }
 
             return Ok();
         }
-
-        [HttpGet("orders/{id:int}")]
-        public async Task<IActionResult> GetOrder(int id, CancellationToken ct)
-        {
-            string? errorMessage = _inputChecker.CheckOrderId(id);
-            if (errorMessage != null) return BadRequest(errorMessage);
-
-            Order? res = _dbService.GetOrder(id);
-            if (res == null)
-            {
-                //_logger.LogWarning($"No order { id }");
-                return BadRequest("������ � ������� id �� ����������");
-            }
-
-            bool isComplete = await _paymentClient.GetPayment(id, ct);
-
-            if (ct.IsCancellationRequested) return StatusCode(499);
-
-            //_logger.LogWarning($"Order { id }");
-            return Json(new CompletableOrder(res, isComplete));
-        }
-
-        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        //public IActionResult Error()
-        //{
-        //    return Error();
-        //}
     }
 }

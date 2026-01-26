@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.WebApi", "OrderServiceMain\OrderService.WebApi.csproj", "{2CF49619-CABB-57D1-879C-5D23BEE1DCD2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.WebApi", "OrderService.WebApi\OrderService.WebApi.csproj", "{99D9AEE2-CDA7-4809-8D5E-F034CFE695D7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.DataAccess.Postgres", "OrderService.DataAccess.Postgres\OrderService.DataAccess.Postgres.csproj", "{87B74B00-7387-4044-A221-98F3E0154A63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.DataAccess.Postgres", "OrderServiceDataBase\OrderService.DataAccess.Postgres.csproj", "{D18C04C2-F304-4894-B335-AA9DBF68EEE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Test", "OrderService.Test\OrderService.Test.csproj", "{5D74F9EA-9696-4BFB-ABCC-EF8703E40ECD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,14 +15,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2CF49619-CABB-57D1-879C-5D23BEE1DCD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2CF49619-CABB-57D1-879C-5D23BEE1DCD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2CF49619-CABB-57D1-879C-5D23BEE1DCD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2CF49619-CABB-57D1-879C-5D23BEE1DCD2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D18C04C2-F304-4894-B335-AA9DBF68EEE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D18C04C2-F304-4894-B335-AA9DBF68EEE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D18C04C2-F304-4894-B335-AA9DBF68EEE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D18C04C2-F304-4894-B335-AA9DBF68EEE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99D9AEE2-CDA7-4809-8D5E-F034CFE695D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99D9AEE2-CDA7-4809-8D5E-F034CFE695D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99D9AEE2-CDA7-4809-8D5E-F034CFE695D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99D9AEE2-CDA7-4809-8D5E-F034CFE695D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87B74B00-7387-4044-A221-98F3E0154A63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87B74B00-7387-4044-A221-98F3E0154A63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87B74B00-7387-4044-A221-98F3E0154A63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87B74B00-7387-4044-A221-98F3E0154A63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D74F9EA-9696-4BFB-ABCC-EF8703E40ECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D74F9EA-9696-4BFB-ABCC-EF8703E40ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D74F9EA-9696-4BFB-ABCC-EF8703E40ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D74F9EA-9696-4BFB-ABCC-EF8703E40ECD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
